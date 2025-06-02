@@ -185,7 +185,7 @@ require('lazy').setup({
             return ']c'
           end
           vim.schedule(function()
-            gs.next_hunk()
+            gs.next_hunk { include_staged = true }
           end)
           return '<Ignore>'
         end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
@@ -194,7 +194,7 @@ require('lazy').setup({
             return '[c'
           end
           vim.schedule(function()
-            gs.prev_hunk()
+            gs.prev_hunk { include_staged = true }
           end)
           return '<Ignore>'
         end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
@@ -262,7 +262,7 @@ require('lazy').setup({
       spec = {
         { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
-        { '<leader>r', group = '[R]ename' },
+        { '<leader>r', group = '[R]efactor' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
@@ -532,10 +532,34 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        ruff = {},
-        pyright = {},
+        basedpyright = {
+          settings = {
+            basedpyright = {
+              disableOrganizeImports = true, -- Let ruff handle imports
+              analysis = {
+                autoImportCompletions = true,
+                autoSearchPaths = true,
+                typeCheckingMode = 'basic', -- Can be 'off', 'basic', or 'strict'
+              },
+            },
+          },
+        },
+        ruff = {
+          init_options = {
+            settings = {
+              organizeImports = true,
+              fixAll = true,
+              codeAction = {
+                fixViolation = {
+                  enable = true,
+                },
+                disableRuleComment = {
+                  enable = true,
+                },
+              },
+            },
+          },
+        },
         rust_analyzer = {
           Rust = {},
         },
@@ -577,6 +601,8 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'ruff', -- Python linter and formatter
+        'basedpyright', -- Python type checker
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -612,7 +638,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        python = { 'black' },
+        python = { 'ruff_format', 'ruff_organize_imports' },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.

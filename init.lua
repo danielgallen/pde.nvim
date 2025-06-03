@@ -682,6 +682,8 @@ require('lazy').setup({
       --  into multiple repos for maintenance purposes.
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
+      'hrsh7th/cmp-buffer',
+      { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql', 'mysql', 'plsql' }, lazy = true },
     },
     config = function()
       -- See `:help cmp`
@@ -747,8 +749,18 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'buffer' },
         },
       }
+
+      cmp.setup.filetype({ 'sql', 'mysql', 'plsql' }, {
+        sources = cmp.config.sources({
+          { name = 'vim-dadbod-completion' },
+        }, {
+          { name = 'buffer' },
+          { name = 'nvim_lsp' },
+        }),
+      })
     end,
   },
 

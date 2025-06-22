@@ -85,6 +85,16 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- Go file indentation settings
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'go',
+  callback = function()
+    vim.opt_local.tabstop = 4
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.softtabstop = 4
+  end,
+})
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -202,28 +212,7 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
       on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
-
-        -- don't override the built-in and fugitive keymaps
-        local gs = package.loaded.gitsigns
-        vim.keymap.set({ 'n', 'v' }, ']c', function()
-          if vim.wo.diff then
-            return ']c'
-          end
-          vim.schedule(function()
-            gs.next_hunk { include_staged = true }
-          end)
-          return '<Ignore>'
-        end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
-        vim.keymap.set({ 'n', 'v' }, '[c', function()
-          if vim.wo.diff then
-            return '[c'
-          end
-          vim.schedule(function()
-            gs.prev_hunk { include_staged = true }
-          end)
-          return '<Ignore>'
-        end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
+        -- GitSigns keymaps are configured in lua/kickstart/plugins/gitsigns.lua
       end,
     },
   },
@@ -803,6 +792,8 @@ require('lazy').setup({
       --  nvim-cmp sources are not needed with blink.cmp
       { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql', 'mysql', 'plsql' }, lazy = true },
       'folke/lazydev.nvim',
+      'supermaven-inc/supermaven-nvim',
+      'saghen/blink.compat',
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -848,9 +839,14 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev' },
+        default = { 'lsp', 'path', 'snippets', 'lazydev', 'supermaven' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+          supermaven = {
+            name = 'supermaven',
+            module = 'blink.compat.source',
+            opts = {},
+          },
         },
       },
 
@@ -1074,6 +1070,13 @@ require('lazy').setup({
   },
 })
 
+-- Buffer navigation keymaps
+vim.keymap.set('n', '<leader>bd', ':bdelete<CR>', { desc = '[B]uffer [D]elete' })
+vim.keymap.set('n', '<leader>bo', ':%bdelete|edit#|bdelete#<CR>', { desc = '[B]uffer close [O]thers' })
+vim.keymap.set('n', 'H', ':bprevious<CR>', { desc = 'Previous buffer' })
+vim.keymap.set('n', 'L', ':bnext<CR>', { desc = 'Next buffer' })
+
+-- BufferLine keymaps (keep existing Alt navigation)
 vim.api.nvim_set_keymap('n', '<A-Right>', ':BufferLineCycleNext<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<A-Left>', ':BufferLineCyclePrev<CR>', { noremap = true, silent = true })
 

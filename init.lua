@@ -493,6 +493,14 @@ require('lazy').setup({
           -- or a suggestion from your LSP for this to activate.
           map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
+          -- Organize imports
+          map('<leader>co', function()
+            vim.lsp.buf.code_action({
+              context = { only = { 'source.organizeImports' } },
+              apply = true,
+            })
+          end, '[C]ode [O]rganize Imports')
+
           -- Find references for the word under your cursor.
           map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 
@@ -661,6 +669,17 @@ require('lazy').setup({
         -- ts_ls = {},
         --
 
+        gopls = {
+          settings = {
+            gopls = {
+              completeUnimported = true,
+              usePlaceholders = true,
+              analyses = {
+                unusedparams = true,
+              },
+            },
+          },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },

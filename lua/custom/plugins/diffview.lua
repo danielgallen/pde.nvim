@@ -18,8 +18,8 @@ return {
       },
     })
     
-    vim.keymap.set('n', '<leader>gd', '<cmd>DiffviewOpen<CR>', { desc = 'Open Diffview' })
-    vim.keymap.set('n', '<leader>gD', '<cmd>DiffviewClose<CR>', { desc = 'Close Diffview' })
+    vim.keymap.set('n', '<leader>gv', '<cmd>DiffviewOpen<CR>', { desc = 'Open Diffview' })
+    vim.keymap.set('n', '<leader>gV', '<cmd>DiffviewClose<CR>', { desc = 'Close Diffview' })
     vim.keymap.set('n', '<leader>gh', '<cmd>DiffviewFileHistory<CR>', { desc = 'Diffview file history' })
   end,
 }

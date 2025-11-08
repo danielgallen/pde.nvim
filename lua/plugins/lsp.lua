@@ -313,6 +313,7 @@ return {
           },
         },
       },
+      htmx = {},
     }
 
     -- Ensure the servers and tools above are installed
@@ -334,6 +335,7 @@ return {
       'ruff', -- Python linter and formatter
       'basedpyright', -- Python type checker
       'markdownlint-cli2', -- Markdown linter
+      'htmx', -- HTMX LSP for HTML attributes
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 

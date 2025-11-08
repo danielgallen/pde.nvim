@@ -7,17 +7,7 @@ return {
 
   -- Set up the plugin after it's been loaded
   config = function()
-    require('telescope').setup {
-      extensions = {
-        file_browser = {
-          hijack_netrw = true,
-        },
-      },
-    }
-
-    -- Load the file browser extension
-    require('telescope').load_extension 'file_browser'
-
+    -- Extension is loaded in main init.lua telescope setup
     -- Set the keymap for launching the file browser
     vim.api.nvim_set_keymap('n', '<space>fb', ':Telescope file_browser<CR>', { noremap = true, silent = true })
   end,

@@ -60,11 +60,21 @@ return {
 
         -- Rename the variable under your cursor.
         --  Most Language Servers support renaming across files, etc.
-        map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
+        map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
 
         -- Execute a code action, usually your cursor needs to be on top of an error
         -- or a suggestion from your LSP for this to activate.
         map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+
+        -- Source actions (organize imports, fix all, etc.)
+        map('<leader>cA', function()
+          vim.lsp.buf.code_action {
+            context = {
+              only = { 'source' },
+              diagnostics = {},
+            },
+          }
+        end, '[C]ode Source [A]ctions')
 
         -- Organize imports
         map('<leader>co', function()
@@ -73,6 +83,28 @@ return {
             apply = true,
           }
         end, '[C]ode [O]rganize Imports')
+
+        -- Fix all auto-fixable problems
+        map('<leader>cF', function()
+          vim.lsp.buf.code_action {
+            context = {
+              only = { 'source.fixAll' },
+              diagnostics = {},
+            },
+            apply = true,
+          }
+        end, '[C]ode [F]ix All')
+
+        -- Quick fix at cursor
+        map('<leader>cq', function()
+          vim.lsp.buf.code_action {
+            context = {
+              only = { 'quickfix' },
+              diagnostics = vim.diagnostic.get(0, { lnum = vim.api.nvim_win_get_cursor(0)[1] - 1 }),
+            },
+            apply = true,
+          }
+        end, '[C]ode [Q]uick Fix')
 
         -- Find references for the word under your cursor.
         map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -85,7 +117,6 @@ return {
         --  This is where a variable was first declared, or where a function is defined, etc.
         --  To jump back, press <C-t>.
         map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-        map('<leader>gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
         -- WARN: This is not Goto Definition, this is Goto Declaration.
         --  For example, in C this would take you to the header.
@@ -103,6 +134,20 @@ return {
         --  Useful when you're not sure what type a variable is and you want to see
         --  the definition of its *type*, not where it was *defined*.
         map('gy', require('telescope.builtin').lsp_type_definitions, '[G]oto T[y]pe Definition')
+
+        -- Diagnostic navigation
+        map(']d', function()
+          vim.diagnostic.goto_next()
+        end, 'Next [D]iagnostic')
+        map('[d', function()
+          vim.diagnostic.goto_prev()
+        end, 'Previous [D]iagnostic')
+        map(']e', function()
+          vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
+        end, 'Next [E]rror')
+        map('[e', function()
+          vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
+        end, 'Previous [E]rror')
 
         -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
         ---@param client vim.lsp.Client
@@ -288,6 +333,7 @@ return {
       'stylua', -- Used to format Lua code
       'ruff', -- Python linter and formatter
       'basedpyright', -- Python type checker
+      'markdownlint-cli2', -- Markdown linter
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 

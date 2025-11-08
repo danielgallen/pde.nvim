@@ -44,11 +44,11 @@ return { -- Highlight, edit, and navigate code
         set_jumps = true,
         goto_next_start = {
           [']m'] = '@function.outer',
-          [']c'] = '@class.outer',
+          [']]'] = '@class.outer',
         },
         goto_previous_start = {
           ['[m'] = '@function.outer',
-          ['[c'] = '@class.outer',
+          ['[['] = '@class.outer',
         },
       },
       lsp_interop = {
